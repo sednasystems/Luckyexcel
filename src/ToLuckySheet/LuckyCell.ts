@@ -801,6 +801,9 @@ export class LuckySheetCelldata extends LuckySheetCelldataBase {
 
             if (id == picId) {
                 const obj = this.getBase64ByRid(picRid, cellImagesRels)
+                if (obj == null) {
+                    return;
+                }
                 ci = obj;
 
                 let x_n =0,y_n = 0;

@@ -213,7 +213,14 @@ export class LuckySheet extends LuckySheetBase {
                 }))
             })?.flat().filter(Boolean).concat(extLstRule?.filter((d: any) => conditionList.findIndex(condition => condition.attributeList.sqref === d.parentAttribute.sqref) === -1)) || [];
             
-            this.conditionalFormatting = ruleList.map((d: any ) => new LuckyCondition(d, this.readXml, this.styles));
+            // One broken rule used to reject the whole sheet. Keep the cells and drop that rule.
+            this.conditionalFormatting = ruleList.flatMap((d: any) => {
+                try {
+                    return [new LuckyCondition(d, this.readXml, this.styles)];
+                } catch (error) {
+                    return [];
+                }
+            });
             // console.log(ruleList, allFileOption, this.conditionalFormatting)
         }
         // console.log(allFileOption)
@@ -357,6 +364,10 @@ export class LuckySheet extends LuckySheetBase {
             let rembed = getXmlAttibute(xdr_blipfill.attributeList, "r:embed", null);
 
             let imageObject: any = this.getBase64ByRid(rembed, drawingRelsFile);
+            // Missing or unsupported media resolves to null. Skip the picture instead of setting `.type` on it.
+            if (imageObject == null) {
+                return {};
+            }
 
             if(editAs=="absolute"){
                 imageObject.type = "3";
@@ -374,21 +385,26 @@ export class LuckySheet extends LuckySheetBase {
     private getGraphic = (twoCellAnchor: Element, drawingRelsFile: string) => {
         const xdr_graphicFrames = twoCellAnchor.getInnerElements("xdr:graphicFrame");
         if (xdr_graphicFrames.length) {
-            const xdr_graphicFrame = xdr_graphicFrames[0];
-            const chartImageGroup = new ChartImageGroup({
-                graphicFrame: xdr_graphicFrame,
-                readXml: this.readXml,
-                drawingRelsFile,
-                styles: this.styles,
-            })
-            const imageObject = chartImageGroup.image;
-            if (chartImageGroup.chart) {
-                if(this.charts==null){
-                    this.charts = [];
+            // A missing chart range or style throws. Omit that chart and keep the sheet.
+            try {
+                const xdr_graphicFrame = xdr_graphicFrames[0];
+                const chartImageGroup = new ChartImageGroup({
+                    graphicFrame: xdr_graphicFrame,
+                    readXml: this.readXml,
+                    drawingRelsFile,
+                    styles: this.styles,
+                })
+                const imageObject = chartImageGroup.image;
+                if (chartImageGroup.chart) {
+                    if(this.charts==null){
+                        this.charts = [];
+                    }
+                    this.charts.push(chartImageGroup.chart)
                 }
-                this.charts.push(chartImageGroup.chart)
+                return imageObject;
+            } catch (error) {
+                return {};
             }
-            return imageObject;
         }
         return {};
     }
