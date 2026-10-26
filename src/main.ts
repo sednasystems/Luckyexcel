@@ -79,14 +79,24 @@ export class LuckyExcel {
         let handleZip: HandleZip = new HandleZip(excelFile);
 
         handleZip.unzipFile(function (files: IuploadfileList) {
-            console.log('input------>', files);
-            let luckyFile = new LuckyFile(files, excelFile.name);
-            let luckysheetfile = luckyFile.Parse();
-            let exportJson = JSON.parse(luckysheetfile);
-            console.log('output---->', exportJson, files)
-            if (callback != undefined) {
-                const univerData = new UniverWorkBook(exportJson)
-                callback(univerData.mode, luckysheetfile);
+            try {
+                console.log('input------>', files);
+                let luckyFile = new LuckyFile(files, excelFile.name);
+                let luckysheetfile = luckyFile.Parse();
+                let exportJson = JSON.parse(luckysheetfile);
+                console.log('output---->', exportJson, files)
+                if (callback != undefined) {
+                    const univerData = new UniverWorkBook(exportJson)
+                    callback(univerData.mode, luckysheetfile);
+                }
+            } catch (error) {
+                // Throws inside the unzip callback otherwise escape as an unhandled rejection.
+                const normalized = error instanceof Error ? error : new Error(String(error));
+                if (errorHandler) {
+                    errorHandler(normalized);
+                } else {
+                    console.error(normalized);
+                }
             }
         },
             function (err: Error) {

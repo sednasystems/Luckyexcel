@@ -25,8 +25,13 @@ export class ImageList {
                         FromEMF.K = [];
                         inp = FromEMF.C; out = FromEMF.K; stt = 4;
                         for (var p in inp) out[inp[p]] = p.slice(stt);
-                        FromEMF.Parse(files[fileKey], wrt);
-                        this.images[fileKey] = wrt.canvas.toDataURL("image/png");
+                        // A bad EMF record throws a string and aborts the whole workbook. Skip that image.
+                        try {
+                            FromEMF.Parse(files[fileKey], wrt);
+                            this.images[fileKey] = wrt.canvas.toDataURL("image/png");
+                        } catch (error) {
+                            // Leave this media file out of the workbook images.
+                        }
                     }
                     else {
                         this.images[fileKey] = files[fileKey];
