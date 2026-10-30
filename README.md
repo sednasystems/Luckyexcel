@@ -28,6 +28,8 @@ The goal is to support all features supported by Univer
 ## Usage
 
 ### CDN
+The script below loads the public `@zwight/luckyexcel` build. This fork is private and is not on that CDN. Install `@sednasystems/luckyexcel` from GitHub Packages instead.
+
 ```html
 <script src="https://unpkg.com/@univerjs/core/lib/umd/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zwight/luckyexcel/dist/luckyexcel.umd.min.js"></script>
@@ -97,13 +99,20 @@ The goal is to support all features supported by Univer
 ### ES and Node.js
 
 #### Installation
+This package is `@sednasystems/luckyexcel` on GitHub Packages. Point the `@sednasystems` scope at that registry (the same `~/.npmrc` token used for other internal packages). The token needs `read:packages`.
+
+```
+@sednasystems:registry=https://npm.pkg.github.com/
+//npm.pkg.github.com/:_authToken=TOKEN
+```
+
 ```shell
-npm install @zwight/luckyexcel
+npm install @sednasystems/luckyexcel
 ```
 
 #### ES import
 ```js
-import LuckyExcel from '@zwight/luckyexcel'
+import LuckyExcel from '@sednasystems/luckyexcel'
 
 // After getting the xlsx file
 LuckyExcel.transformExcelToUniver(
@@ -135,6 +144,18 @@ npm run dev
 ```
 npm run build
 ```
+
+### Publish
+Publish from this repo to GitHub Packages. The package name has to stay `@sednasystems/luckyexcel`. GitHub rejects a scope that does not match the org. `publishConfig.registry` is already `https://npm.pkg.github.com`.
+
+The workflow runs `npm publish` on the commit you select. It does not build. `dist/` in git is what gets published. Do not run `npm run release`. That uses release-it and publishes from your machine.
+
+1. Bump the version. `npm run bump-version` increments the patch. `npm run bump-version -- minor`, `major`, or `1.2.0` sets it explicitly. The script updates `package.json` and the root package in `package-lock.json`. GitHub Packages will not accept a version that is already published. `1.1.7` is taken.
+2. `npm run build`
+3. Commit `package.json`, `package-lock.json`, and `dist/`. Push to `master`.
+4. On GitHub: Actions → **Publish to GitHub Packages** → Run workflow, branch `master`.
+
+`GITHUB_TOKEN` in this repo has `packages: write`. A token from another repo cannot publish this package.
 
 A third-party plug-in is used in the project: [JSZip](https://github.com/Stuk/jszip), thanks!
 

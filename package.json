@@ -28,6 +28,7 @@
   },
   "scripts": {
     "build": "gulp build",
+    "bump-version": "node scripts/bump-version.js",
     "dev": "gulp dev",
     "release": "release-it",
     "release:beta": "release-it --preRelease=beta"

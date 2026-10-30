@@ -28,6 +28,7 @@ dist/luckysheet/
 dist/*.map
 dist/index.html
 assets/
+scripts/
 src
 deploy.bat
 gulpfile.js
