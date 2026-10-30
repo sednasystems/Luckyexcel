@@ -1,6 +1,6 @@
 {
-  "name": "@zwight/luckyexcel",
-  "version": "1.1.6",
+  "name": "@sednasystems/luckyexcel",
+  "version": "1.1.7",
   "description": "An excel import and export library adapted to Luckysheet",
   "main": "dist/luckyexcel.cjs.js",
   "module": "dist/luckyexcel.esm.js",
@@ -40,7 +40,10 @@
   "homepage": "https://github.com/zwight/Luckyexcel",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zwight/Luckyexcel.git"
+    "url": "https://github.com/sednasystems/Luckyexcel.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "license": "MIT",
   "devDependencies": {
