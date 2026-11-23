@@ -1023,19 +1023,39 @@ export function getRegionSequence(arr: string[]): string[] {
  * @returns {string[]} - after arr
  */
 export function getSqrefRawArrFormat(arr: string[]): string[] {
-  arr?.map((el) => {
+  // Plain cells (and malformed entries) keep their original order and come
+  // first; the cells expanded from each `A1:B2` range are appended after them,
+  // in range order. Then duplicates are dropped, keeping the first occurrence.
+  const plainArr: string[] = [];
+  const expandedArr: string[] = [];
+
+  for (const el of arr) {
     if (el.includes(":")) {
-      let tempArr: string[] = el.split(":");
+      const tempArr: string[] = el.split(":");
       if (tempArr?.length === 2) {
-        arr = arr.concat(getRegionSequence(tempArr));
-        arr.splice(arr.indexOf(el), 1);
+        const regionArr = getRegionSequence(tempArr);
+        for (let i = 0; i < regionArr.length; i++) {
+          expandedArr.push(regionArr[i]);
+        }
+        continue;
       }
     }
-  });
+    plainArr.push(el);
+  }
 
-  const resultArr = arr.filter(
-    (value, index, array) => array.indexOf(value) === index
-  );
+  const seen = new Set<string>();
+  const resultArr: string[] = [];
+  const appendUnique = (list: string[]) => {
+    for (let i = 0; i < list.length; i++) {
+      const value = list[i];
+      if (!seen.has(value)) {
+        seen.add(value);
+        resultArr.push(value);
+      }
+    }
+  };
+  appendUnique(plainArr);
+  appendUnique(expandedArr);
 
   return resultArr;
 }
