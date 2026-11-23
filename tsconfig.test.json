@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "files": [
+        "test/method.test.ts"
+    ],
+    "include": [],
+    "compilerOptions": {
+        "outDir": ".test-build/",
+        "declaration": false,
+        "rootDir": "."
+    }
+}

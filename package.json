@@ -28,6 +28,7 @@
   },
   "scripts": {
     "build": "gulp build",
+    "test": "tsc -p tsconfig.test.json && node --test .test-build/test/method.test.js",
     "bump-version": "node scripts/bump-version.js",
     "dev": "gulp dev",
     "release": "release-it",

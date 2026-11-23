@@ -39,3 +39,6 @@ tsconfig.json
 .release-it.json
 commitlint.config.js
 CHANGELOG.md
+test
+tsconfig.test.json
+.test-build
